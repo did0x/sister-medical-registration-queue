@@ -17,6 +17,7 @@ server.register_introspection_functions()
 
 # buat data struktur array untuk menampung klinik di rumah sakit
 klinik_rumah_sakit = ['Klinik A', 'Klinik B', 'Klinik C']
+klinik = {'Klinik Gigi':0 , 'Klinik Penyakit Dalam':0, 'Klinik Anak': 0}    
 antrean_pasien = []
 
 # kode setelah ini adalah critical section, menambahkan vote tidak boeh terjadi race condition
@@ -106,7 +107,6 @@ def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
 
     # critical section berakhir
     lock.release()
-    return "Pasien Telah Terdaftar!"
 
 # register daftarkan_pasien sebagai daftarPasien
 server.register_function(daftarkan_pasien, 'daftarPasien')
