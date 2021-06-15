@@ -1,9 +1,12 @@
 # import SimpleXMLRPCServer
+from xmlrpc.client import DateTime
 from xmlrpc.server import SimpleXMLRPCServer
 
 # import SimpleXMLRPCRequestHandler
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 import threading
+import datetime
+import random
 
 # Batasi hanya pada path /RPC2 saja supaya tidak bisa mengakses path lainnya
 class RequestHandler(SimpleXMLRPCRequestHandler):
@@ -40,7 +43,7 @@ server.register_function(check_rekam_medis, 'cekRekamMedis')
 #  buat fungsi bernama check_klinik()
 def check_klinik(no_klinik):
     # melakukan pengecekan apakah nomor klinik terdaftar
-    if no_klinik.isdigit:
+    if no_klinik.isdigit():
         if int(no_klinik) in range(len(klinik_rumah_sakit)):
             return True
         else:
@@ -53,6 +56,8 @@ server.register_function(check_klinik, 'cekKlinik')
 
 #  buat fungsi bernama get_antrean()
 def get_antrean():
+    if len(antrean_pasien) == 0:
+        return None
     return antrean_pasien
 
 # register get_antrean sebagai getAntrean
@@ -96,6 +101,11 @@ def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
     pasien = registrasi_pasien(no_rekam_medis, nama, tgl_lahir)
     pasien['klinik'] = klinik_rumah_sakit[input_klinik-1]
     pasien['no_antrean'] = cari_nomor_antrean(klinik_rumah_sakit[input_klinik-1])
+
+    if pasien['no_antrean'] == 1:
+        pasien['jam_check_up'] = datetime.datetime.now() + datetime.timedelta(minutes= 1)
+    else:
+        pasien['jam_check_up'] = antrean_pasien[-1]['jam_check_up'] + datetime.timedelta(minutes= 1)
     antrean_pasien.append(pasien)
 
     # critical section berakhir
@@ -106,4 +116,20 @@ def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
 server.register_function(daftarkan_pasien, 'daftarPasien')
 
 # Jalankan server
-server.serve_forever()
+def run_server():
+    server.serve_forever()
+
+def update():
+    while True:
+        if len(antrean_pasien) != 0:
+            if datetime.datetime.now() >= antrean_pasien[0]['jam_check_up']:
+                print(datetime.datetime.now())
+                print(antrean_pasien[0]['jam_check_up'])
+                lock.acquire()
+                antrean_pasien.pop()
+                lock.release()
+
+
+if __name__ == '__main__':
+    threading.Thread(target = run_server).start()
+    threading.Thread(target = update).start()

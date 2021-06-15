@@ -1,5 +1,7 @@
 from typing import NoReturn
 import xmlrpc.client
+from threading import Thread
+import time
 
 # buat stub (proxy) untuk client
 s = xmlrpc.client.ServerProxy('http://127.0.0.1:8080')
@@ -29,8 +31,12 @@ def daftarkan_diri():
     print(s.daftarPasien(input_klinik, no_rekam_medis, nama, tgl_lahir))
 
 def cek_antrean():
-    for pasien in s.getAntrean():
-        print(pasien)
+    if not None:
+        for pasien in s.getAntrean():
+            print(pasien)
+    else:
+        print("tidak ada antrean!")
+
 
 while True:
     print("\n Daftar Layanan Rumah Sakit Kelompok 2")
