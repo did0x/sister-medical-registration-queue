@@ -1,6 +1,6 @@
-import time
 import xmlrpc.client
 from datetime import date, datetime, timedelta
+from threading import Thread
 from os import system, name
 from time import sleep
 
@@ -51,35 +51,25 @@ def print_antrean(antrean):
         print(f"Nomor Antrean Sekarang: {antrean[0].get('no_antrean')}")
         print('=======================')
 
-# def update_antrean(antrean):
+while True:
+    print("\n Daftar Layanan Rumah Sakit Kelompok 2")
+    print("1. Daftarkan Diri ")
+    print("2. Cek Antrean")
+    print("3. Keluar")
+    while True:
+        inpt_opt = input("Masukan angka: ")
+        if inpt_opt.isdigit():
+            inpt_opt = int(inpt_opt)
+            if inpt_opt in range(1, 4):
+                break
+            else:
+                print("[Error] Tidak terdapat opsi tersebut!")
+        else:
+            print("[Error] Masukan sebuah angka!")
 
-# show menu
-# while True:
-#     antrean = server.getAntrean()
-#     print_antrean(antrean)
-#     print("\nDaftar Layanan Rumah Sakit Kelompok 2")
-#     print("1. Daftarkan Diri ")
-#     print("2. Cek Antrean")
-#     print("3. Keluar")
-#     while True:
-#         inpt_opt = input("Masukan angka: ")
-#         if inpt_opt.isdigit():
-#             inpt_opt = int(inpt_opt)
-#             if inpt_opt in range(1, 4):
-#                 break
-#             else:
-#                 print("[Error] Tidak terdapat opsi tersebut!")
-#         else:
-#             print("[Error] Masukan sebuah angka!")
-
-#     if inpt_opt == 1:
-#         daftarkan_diri()
-#         clear()
-#     elif inpt_opt == 2:
-#         cek_antrean()
-#         clear()
-#     elif inpt_opt == 3 :
-#         break
-
-print(datetime.now())
-print(datetime.now() + timedelta(seconds=300))
+    if inpt_opt == 1:
+        daftarkan_diri()
+    elif inpt_opt == 2:
+        cek_antrean()
+    elif inpt_opt == 3 :
+        break
