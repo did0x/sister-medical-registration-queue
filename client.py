@@ -5,7 +5,7 @@ from os import system, name
 from time import sleep
 
 # buat stub (proxy) untuk client
-server = xmlrpc.client.ServerProxy('http://127.0.0.1:8080')
+server = xmlrpc.client.ServerProxy('http://26.60.48.126:8080')
 
 def clear(need_continue=True):
     if need_continue:
@@ -19,16 +19,22 @@ def daftarkan_diri():
     clear(need_continue=False)
     while True:
         i = 0
-        for klinik in server.getKlinik():
+        for klinik, jumlah in server.getKlinik().items():
             i+=1
-            print(f"{i}. {klinik}")
+            kondisi = 'Buka' if jumlah <= 3 else 'Penuh'
+            print(f"{i}. {klinik} ({kondisi})")
         break
 
     while True:
         input_klinik = input('Masukan nomor klinik: ')
         if server.cekKlinik(input_klinik):
             input_klinik = int(input_klinik)
-            break
+            if (server.masukKlinik(input_klinik)):
+                break
+            else:
+                print("[Error] Klinik sudah penuh")
+        else:
+            print("[Error] Tidak ditemukan klinik dengan nomor tersebut")
 
     date = datetime.today()
     no_rekam_medis = date.strftime('%d%m%Y') + '.' + date.strftime('%H%M')
@@ -39,10 +45,10 @@ def daftarkan_diri():
     print('Pasien Telah Terdaftar!')
 
 def cek_antrean():
-    print('No. Antrean \t Nama Pasien')
+    print('No. Antrean \t Nama Pasien \t Klinik')
     if server.getAntrean() != None:
         for pasien in server.getAntrean():
-            print(f"{pasien.get('no_antrean')} \t\t {pasien.get('nama_pasien')}")
+            print(f"{pasien['no_antrean']} \t\t {pasien['nama_pasien']} \t\t {pasien['klinik']}")
     else:
         print('Tidak ada antrean')
 
@@ -52,8 +58,10 @@ def print_antrean(antrean):
         print('Belum ada antrean')
         print('=======================')
     else:
+        date_converted = datetime.strptime(str(antrean[0]['jam_check_up']), "%Y%m%dT%H:%M:%S")
         print('=======================')
-        print(f"Nomor Antrean Sekarang: {antrean[0].get('no_antrean')}")
+        print(f"Nomor Antrean Sekarang: {antrean[0]['no_antrean']}")
+        print(f"Waktu Masuk: {date_converted}")
         print('=======================')
 
 while True:
@@ -64,7 +72,7 @@ while True:
     print("2. Cek Antrean")
     print("3. Keluar")
     while True:
-        inpt_opt = input("Masukan angka: ")
+        inpt_opt = input("Masukan menu pilihan: ")
         if inpt_opt.isdigit():
             inpt_opt = int(inpt_opt)
             if inpt_opt in range(1, 4):
