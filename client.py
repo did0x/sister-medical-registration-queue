@@ -1,11 +1,18 @@
-from typing import NoReturn
 import xmlrpc.client
+from datetime import datetime
+from os import system, name
+from time import sleep
 
 # buat stub (proxy) untuk client
 s = xmlrpc.client.ServerProxy('http://127.0.0.1:8080')
 
+def clear():
+    if name == 'nt':
+        _ = system('cls')
+    else:
+        _ = system('clear')
+
 def daftarkan_diri():
-    print("\n")
     while True:
         i = 0
         for klinik in s.getKlinik():
@@ -19,10 +26,8 @@ def daftarkan_diri():
             input_klinik = int(input_klinik)
             break
 
-    while True:
-        no_rekam_medis = input('Masukan nomor rekam medis: ')
-        if s.cekRekamMedis(no_rekam_medis):
-            break
+    date = datetime.today()
+    no_rekam_medis = 'MEDIS' + date.strftime('%d%m%Y')
     
     nama = input('Masukan nama lengkap: ')
     tgl_lahir = input('Masukan tanggal lahir: ')
@@ -30,10 +35,24 @@ def daftarkan_diri():
 
 def cek_antrean():
     for pasien in s.getAntrean():
+        print(pasien['no_rek_medis'])
         print(pasien)
 
+def print_antrean(antrean):
+    if (len(antrean) == 0):
+        print('Belum ada antrean')
+    else:
+        print('=======================')
+        print(f"Nomor Antrean Sekarang: {antrean[0].get('no_antrean')}")
+        print('=======================')
+
+# def update_antrean(antrean):
+
+# show menu
 while True:
-    print("\n Daftar Layanan Rumah Sakit Kelompok 2")
+    antrean = s.getAntrean()
+    print_antrean(antrean)
+    print("\nDaftar Layanan Rumah Sakit Kelompok 2")
     print("1. Daftarkan Diri ")
     print("2. Cek Antrean")
     print("3. Keluar")
@@ -50,6 +69,8 @@ while True:
 
     if inpt_opt == 1:
         daftarkan_diri()
+        sleep(3)
+        clear()
     elif inpt_opt == 2:
         cek_antrean()
     elif inpt_opt == 3 :

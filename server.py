@@ -4,6 +4,8 @@ from xmlrpc.server import SimpleXMLRPCServer
 # import SimpleXMLRPCRequestHandler
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 import threading
+import time
+import random
 
 # Batasi hanya pada path /RPC2 saja supaya tidak bisa mengakses path lainnya
 class RequestHandler(SimpleXMLRPCRequestHandler):
@@ -40,7 +42,7 @@ server.register_function(check_rekam_medis, 'cekRekamMedis')
 #  buat fungsi bernama check_klinik()
 def check_klinik(no_klinik):
     # melakukan pengecekan apakah nomor klinik terdaftar
-    if no_klinik.isdigit:
+    if no_klinik.isdigit():
         if int(no_klinik) in range(len(klinik_rumah_sakit)):
             return True
         else:
@@ -67,11 +69,15 @@ server.register_function(get_klinik, 'getKlinik')
 
 # buat fungsi bernama registrasi_pasien()
 def registrasi_pasien(no_rekam_medis, nama, tgl_lahir):
+    # random timeout pasien
+    waktu_pasien = random.randrange(20, 30)
+
     # membuat struktur data dictionary menampung data pasien
     x = {
         'no_rek_medis' : no_rekam_medis,
         'nama_pasien' : nama,
-        'tgl_lahir' : tgl_lahir
+        'tgl_lahir' : tgl_lahir,
+        'waktu_pasien': waktu_pasien
     }
     return x
 
@@ -106,4 +112,5 @@ def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
 server.register_function(daftarkan_pasien, 'daftarPasien')
 
 # Jalankan server
+print('Server is running ...')
 server.serve_forever()
