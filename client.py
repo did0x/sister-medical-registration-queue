@@ -40,19 +40,26 @@ def daftarkan_diri():
 
 def cek_antrean():
     print('No. Antrean \t Nama Pasien')
-    for pasien in server.getAntrean():
-        print(f"{pasien.get('no_antrean')} \t\t {pasien.get('nama_pasien')}")
+    if server.getAntrean() != None:
+        for pasien in server.getAntrean():
+            print(f"{pasien.get('no_antrean')} \t\t {pasien.get('nama_pasien')}")
+    else:
+        print('Tidak ada antrean')
 
 def print_antrean(antrean):
-    if (len(antrean) == 0):
+    if (antrean == None):
+        print('=======================')
         print('Belum ada antrean')
+        print('=======================')
     else:
         print('=======================')
         print(f"Nomor Antrean Sekarang: {antrean[0].get('no_antrean')}")
         print('=======================')
 
 while True:
-    print("\n Daftar Layanan Rumah Sakit Kelompok 2")
+    antrean = server.getAntrean()
+    print_antrean(antrean)
+    print("Daftar Layanan Rumah Sakit Kelompok 2")
     print("1. Daftarkan Diri ")
     print("2. Cek Antrean")
     print("3. Keluar")
@@ -69,7 +76,9 @@ while True:
 
     if inpt_opt == 1:
         daftarkan_diri()
+        clear()
     elif inpt_opt == 2:
         cek_antrean()
+        clear()
     elif inpt_opt == 3 :
         break

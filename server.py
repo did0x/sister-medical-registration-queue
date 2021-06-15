@@ -121,6 +121,7 @@ server.register_function(daftarkan_pasien, 'daftarPasien')
 
 # Jalankan server
 def run_server():
+    print('Running server...')
     server.serve_forever()
 
 def update():
@@ -131,6 +132,7 @@ def update():
                 print(antrean_pasien[0]['jam_check_up'])
                 lock.acquire()
                 antrean_pasien.pop()
+                print('[POP] Data selesai')
                 lock.release()
 
 
