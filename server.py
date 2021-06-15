@@ -137,10 +137,12 @@ def run_server():
 def update():
     while True:
         if len(antrean_pasien) != 0:
-            if datetime.datetime.now() >= antrean_pasien[0]['jam_check_up']:
+            pasien = antrean_pasien[0]
+            if datetime.datetime.now() >= pasien['jam_check_up']:
 
                 lock.acquire()
                 antrean_pasien.pop()
+                klinik[pasien['klinik']] = klinik.get(pasien['klinik']) - 1
                 print('[POP] Data selesai')
                 lock.release()
 
