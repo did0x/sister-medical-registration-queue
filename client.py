@@ -5,7 +5,7 @@ from os import system, name
 from time import sleep
 
 # buat stub (proxy) untuk client
-server = xmlrpc.client.ServerProxy('http://26.60.48.126:8080')
+server = xmlrpc.client.ServerProxy('http://127.0.0.1:8080')
 
 def clear(need_continue=True):
     if need_continue:
