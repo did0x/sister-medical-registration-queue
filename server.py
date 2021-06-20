@@ -1,5 +1,4 @@
 # import SimpleXMLRPCServer
-from xmlrpc.client import DateTime
 from xmlrpc.server import SimpleXMLRPCServer
 # import SimpleXMLRPCRequestHandler
 from xmlrpc.server import SimpleXMLRPCRequestHandler
@@ -28,20 +27,25 @@ klinik_kulit = []
 # siapkan lock
 lock = threading.Lock()
 
-# buat fungsi bernama reverse
-# def reverse(x):
-#     return [ele for ele in reversed(x)]
+# buat fungsi bernama check_klinik()
+def check_pasien(no_rekam_medis):
+    # dilakukan pengecekan no rekam medis di setiap klinik
+    for pasien in klinik_anak:
+        if pasien['no_rek_medis'] == no_rekam_medis:
+            return pasien
+    for pasien in klinik_gigi:
+        if pasien['no_rek_medis'] == no_rekam_medis:
+            return pasien
+    for pasien in klinik_kulit:
+        if pasien['no_rek_medis'] == no_rekam_medis:
+            return pasien
+    for pasien in klinik_pnykit_dalam:
+        if pasien['no_rek_medis'] == no_rekam_medis:
+            return pasien
+    return None
 
-#  buat fungsi bernama check_rekam_medis()
-# def check_rekam_medis(no_rekam_medis):
-#     # melakukan pengecekan apakah nomor rekam medis sudah ada
-#     for pasien in antrean_pasien:
-#         if pasien['no_rek_medis'] == no_rekam_medis:
-#             return False
-#     return True
-
-# # register check_rekam_medis sebagai cekRekamMedis
-# server.register_function(check_rekam_medis, 'cekRekamMedis')
+# register check_pasien sebagai cekPasien
+server.register_function(check_pasien, 'cekPasien')
 
 #  buat fungsi bernama check_klinik()
 def check_klinik(no_klinik):
@@ -59,9 +63,10 @@ server.register_function(check_klinik, 'cekKlinik')
 
 #  buat fungsi bernama get_antrean()
 def get_antrean():
-    if len(klinik_gigi) == 0:
-        return None
-    return klinik_gigi
+    # if len(klinik_gigi) == 0:
+    #     return None
+    # return klinik_gigi
+    return klinik_anak, klinik_gigi, klinik_kulit, klinik_pnykit_dalam
 
 # register get_antrean sebagai getAntrean
 server.register_function(get_antrean, 'getAntrean')
