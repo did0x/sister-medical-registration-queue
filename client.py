@@ -80,21 +80,24 @@ def cek_antrean():
     if not(klinik_anak) and not(klinik_gigi) and not(klinik_kulit) and not(klinik_p_dalam):
         print('Tidak ada antrean')
 
-# def print_antrean(antrean):
-#     if (antrean == None):
-#         print('=======================')
-#         print('Belum ada antrean')
-#         print('=======================')
-#     else:
-#         date_converted = datetime.strptime(str(antrean[0]['jam_check_up']), "%Y%m%dT%H:%M:%S")
-#         print('=======================')
-#         print(f"Nomor Antrean Sekarang: {antrean[0]['no_antrean']}")
-#         print(f"Waktu Masuk: {date_converted}")
-#         print('=======================')
+def seluruh_antren():
+    klinik_anak, klinik_gigi, klinik_kulit, klinik_p_dalam = server.getAntrean()
+    return klinik_anak+klinik_gigi+klinik_kulit+klinik_p_dalam
+
+def print_antrean(antrean):
+    if not antrean:
+        print('=======================')
+        print('Belum ada antrean')
+        print('=======================')
+    else:
+        date_converted = datetime.strptime(str(antrean[0]['jam_check_up']), "%Y%m%dT%H:%M:%S")
+        print('=======================')
+        print(f"Nomor Antrean Sekarang: {antrean[0]['no_antrean']}")
+        print(f"Waktu Masuk: {date_converted}")
+        print('=======================')
 
 while True:
-    # antrean = server.getAntrean()
-    # print_antrean(antrean)
+    print_antrean(seluruh_antren())
     print("Daftar Layanan Rumah Sakit Kelompok 2")
     print("1. Daftarkan Diri ")
     print("2. Cek Antrean")
