@@ -3,8 +3,11 @@ import random
 import pickle
 from os import path
 
+# membuat class DB untuk menyimpan data pada file 'db'
 class DB:
+    # inisialisasi class DB
     def __init__(self, filename):
+        # jika file belum dibuat, maka inisialisasi data dan filenya
         if not path.exists(filename):
             self.data = {
                 "klinik": {'Klinik Gigi': 0, 'Klinik Penyakit Dalam': 0,
@@ -18,24 +21,22 @@ class DB:
             pickle.dump(self.data, file)
 
         self.filename = filename
-
+    # fungsi untuk menyimpan data pada file
     def save(self, data):
         file = open(self.filename, 'wb')
         pickle.dump(data, file)
         file.close()
-
+    # fungsi untuk membaca data pada file
     def load(self):
         file = open(self.filename, 'rb')
         data = pickle.load(file)
         file.close()
         return data
 
-
+# init class db
 db = DB('db')
 
 #  buat fungsi bernama check_klinik()
-
-
 def check_klinik(no_klinik):
     # melakukan pengecekan apakah nomor klinik terdaftar
     if no_klinik.isdigit():
@@ -47,8 +48,6 @@ def check_klinik(no_klinik):
         print("[Error] Masukan Angka!")
 
 # buat fungsi check pasien
-
-
 def check_pasien(no_rekam_medis):
     data = db.load()
     # dilakukan pengecekan no rekam medis di setiap klinik
@@ -68,23 +67,15 @@ def check_pasien(no_rekam_medis):
 
 
 #  buat fungsi bernama get_antrean()
-
 def get_antrean():
     data = db.load()
-    # if len(klinik_gigi) == 0:
-    #     return None
-    # return klinik_gigi
     return data["klinik_anak"], data["klinik_gigi"], data["klinik_kulit"], data["klinik_pnykit_dalam"]
 
 #  buat fungsi bernama get_klinik()
-
-
 def get_klinik():
     return db.load()["klinik"]
 
 # buat fungsi bernama masuk_klinik()
-
-
 def masuk_klinik(no_klinik):
     klinik = db.load()["klinik"]
     klinik_keys = list(klinik)
@@ -94,8 +85,6 @@ def masuk_klinik(no_klinik):
         return False
 
 # buat fungsi bernama registrasi_pasien()
-
-
 def registrasi_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
     data = db.load()
     klinik = data["klinik"]
@@ -138,8 +127,6 @@ def registrasi_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
     return pasien
 
 # buat fungsi bernama cari_nomor_antrean()
-
-
 def cari_nomor_antrean(klinik):
     data = db.load()
 
@@ -165,8 +152,6 @@ def cari_nomor_antrean(klinik):
         return temp_list[-1]['no_antrean'] + 1
 
 # buat fungsi bernama jam_check_up_pasien()
-
-
 def jam_check_up_pasien(no_antrean, klinik):
     data = db.load()
 
@@ -216,7 +201,3 @@ def pop_klinik(k):
         "klinik_kulit": klinik_kulit
     })
     print('[POP] Data selesai')
-
-
-def test():
-    print("hello")
