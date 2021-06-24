@@ -12,12 +12,12 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 # Buat server
-server = SimpleXMLRPCServer(("127.0.0.1", 8080),requestHandler=RequestHandler, allow_none=True) 
+server = SimpleXMLRPCServer(("26.60.48.126", 8080),requestHandler=RequestHandler, allow_none=True) 
 server.register_introspection_functions()
 
 # buat data struktur array untuk menampung klinik di rumah sakit
-# klinik_rumah_sakit = ['Klinik Gigi', 'Klinik Penyakit Dalam', 'Klinik C']
 klinik = {'Klinik Gigi':0 , 'Klinik Penyakit Dalam':0, 'Klinik Anak': 0, 'Klinik Kulit': 0}    
+# buat data untuk menyimpan setiap data antrean per klinik
 klinik_gigi = []
 klinik_pnykit_dalam = []
 klinik_anak = []
@@ -27,7 +27,7 @@ klinik_kulit = []
 # siapkan lock
 lock = threading.Lock()
 
-# buat fungsi bernama check_klinik()
+# buat fungsi bernama check_pasien()
 def check_pasien(no_rekam_medis):
     # dilakukan pengecekan no rekam medis di setiap klinik
     for pasien in klinik_anak:
@@ -63,9 +63,7 @@ server.register_function(check_klinik, 'cekKlinik')
 
 #  buat fungsi bernama get_antrean()
 def get_antrean():
-    # if len(klinik_gigi) == 0:
-    #     return None
-    # return klinik_gigi
+    # mengembalikan seluruh data klinik
     return klinik_anak, klinik_gigi, klinik_kulit, klinik_pnykit_dalam
 
 # register get_antrean sebagai getAntrean
@@ -80,7 +78,9 @@ server.register_function(get_klinik, 'getKlinik')
 
 # buat fungsi bernama masuk_klinik()
 def masuk_klinik(no_klinik):
+    # mengubah data dict menjadi list
     klinik_keys = list(klinik)
+    # jika klinik dengan klinik_keys memiliki pasien tidak lebih dari 4, maka klinik belum penuh
     if (klinik[klinik_keys[no_klinik-1]] <= 3):
         return True
     else:
@@ -101,7 +101,7 @@ def registrasi_pasien(no_rekam_medis, nama, tgl_lahir):
 
 # buat fungsi bernama cari_nomor_antrean()
 def cari_nomor_antrean(klinik):
-    # membalikan list pasien agar data yang terbaru menjadi di depan
+    # mengembalikan list pasien agar data yang terbaru menjadi di depan
     if klinik == 'Klinik Gigi':
         temp_list = klinik_gigi
     elif klinik == 'Klinik Penyakit Dalam':
@@ -119,8 +119,10 @@ def cari_nomor_antrean(klinik):
 
 # buat fungsi bernama jam_check_up_pasien()
 def jam_check_up_pasien(no_antrean, klinik):
+    # jika pasien merupakan pendaftar pertama anggap waktu antrean 1 menit
     if no_antrean == 1:
         return datetime.datetime.now() + datetime.timedelta(minutes= 1)
+    # jika tidak, anggap waktu antrean sekitar 5 - 8 menit
     else:
         if klinik == 'Klinik Gigi':
             return klinik_gigi[-1]['jam_check_up'] + datetime.timedelta(minutes= random.randint(5, 8))
@@ -136,7 +138,7 @@ def jam_check_up_pasien(no_antrean, klinik):
 def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
     # critical section dimulai
     lock.acquire()
-
+    
     pasien = registrasi_pasien(no_rekam_medis, nama, tgl_lahir)
 
     klinik_keys = list(klinik)
@@ -144,7 +146,6 @@ def daftarkan_pasien(input_klinik, no_rekam_medis, nama, tgl_lahir):
     pasien['klinik'] = klinik_keys[input_klinik-1]
     pasien['no_antrean'] = cari_nomor_antrean(klinik_keys[input_klinik-1])
     pasien['jam_check_up'] = jam_check_up_pasien(pasien['no_antrean'], pasien['klinik'])
-
 
     if pasien['klinik'] == 'Klinik Gigi':
         klinik_gigi.append(pasien)
@@ -167,6 +168,7 @@ def run_server():
     print('Running server...')
     server.serve_forever()
 
+# Melakukan update klinik kulit apabila pasien sudah selesai antrean
 def update_klinik_kulit():
     while True:
         if len(klinik_kulit) != 0:
@@ -176,6 +178,7 @@ def update_klinik_kulit():
                 klinik[pasien['klinik']] = klinik.get(pasien['klinik']) - 1
                 print('[POP] Data selesai')
 
+# Melakukan update klinik gigi apabila pasien sudah selesai antrean
 def update_klinik_gigi():
     while True:
         if len(klinik_gigi) != 0:
@@ -185,6 +188,7 @@ def update_klinik_gigi():
                 klinik[pasien['klinik']] = klinik.get(pasien['klinik']) - 1
                 print('[POP] Data selesai')
 
+# Melakukan update klinik anak apabila pasien sudah selesai antrean
 def update_klinik_anak():
     while True:
         if len(klinik_anak) != 0:
@@ -194,6 +198,7 @@ def update_klinik_anak():
                 klinik[pasien['klinik']] = klinik.get(pasien['klinik']) - 1
                 print('[POP] Data selesai')
 
+# Melakukan update klinik penyakit dalam apabila pasien sudah selesai antrean
 def update_klinik_pnykit_dalam():
     while True:
         if len(klinik_pnykit_dalam) != 0:
@@ -203,6 +208,7 @@ def update_klinik_pnykit_dalam():
                 klinik[pasien['klinik']] = klinik.get(pasien['klinik']) - 1
                 print('[POP] Data selesai')
 
+# Main fungsi
 if __name__ == '__main__':
     threading.Thread(target = run_server).start()
     threading.Thread(target = update_klinik_kulit).start()

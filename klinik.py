@@ -3,7 +3,6 @@ import random
 import pickle
 from os import path
 
-
 class DB:
     def __init__(self, filename):
         if not path.exists(filename):

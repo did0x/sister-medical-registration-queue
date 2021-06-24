@@ -45,7 +45,6 @@ lock = threading.Lock()
 # register check_pasien sebagai cekPasien
 server.register_function(check_pasien, 'cekPasien')
 
-
 # register check_klinik sebagai cekKlinik
 server.register_function(check_klinik, 'cekKlinik')
 
